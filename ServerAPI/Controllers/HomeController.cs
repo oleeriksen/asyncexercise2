@@ -23,7 +23,7 @@ namespace ServerAPI.Controllers
 
         [HttpGet]
         [Route("{count}")]
-        public IEnumerable<int> GetPrimes(int count)
+        public IEnumerable<int> GetNumbers(int count)
         {
             IEnumerable<int> result = GetEvenNumbersByAmount(count);
             Thread.Sleep(2000);
