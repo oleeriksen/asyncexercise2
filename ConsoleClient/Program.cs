@@ -7,7 +7,6 @@ namespace ConsoleClient
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             Console.WriteLine("Async Exercise - type 'q' to quit");
@@ -22,24 +21,31 @@ namespace ConsoleClient
 
                 Task<HttpResponseMessage> response = _client.GetAsync("https://localhost:5003/numbers/12");
 
-                String result = (response.Result.Content.ReadAsStringAsync().Result);
+                response.ContinueWith((r) =>
+                {
+                    string result = r.Result.Content.ReadAsStringAsync().Result;
 
-                WriteToFile("Result: " + result + " between " + start.ToLongTimeString() + " - " + DateTime.Now.ToLongTimeString());
-
+                    WriteToFile("Result: " + result + " between " + start.ToLongTimeString() + " - " + DateTime.Now.ToLongTimeString());
+                });
                 Console.Write(">");
                 input = Console.ReadKey().KeyChar;
             }
         }
 
+        private static Object mLock = new object();
+
         private static void WriteToFile(string s)
         {
-            string path = @"fromclient.txt";
+            lock (mLock)
+            {
+                string path = @"fromclient.txt";
 
-            StreamWriter sw = File.AppendText(path);
+                StreamWriter sw = File.AppendText(path);
 
-            sw.WriteLine(s);
+                sw.WriteLine(s);
 
-            sw.Flush();
+                sw.Flush();
+            }
         }
     }
 }
